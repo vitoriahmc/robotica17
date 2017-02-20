@@ -43,7 +43,7 @@ while(True):
     # Convert the frame to grayscale
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
     # A gaussian blur to get rid of the noise in the image
-    blur = cv2.GaussianBlur(gray,(5,5),25)
+    blur = cv2.GaussianBlur(gray,(5,5),25) #aumentamos o blur
     # Detect the edges present in the image
     bordas = auto_canny(blur)
     
@@ -65,9 +65,11 @@ while(True):
         raios = []
         
         for i in circles[0,:]:
+
+            opening = cv2.morphologyEx(circles, cv2.MORPH_OPEN, kernel) #melhora os ruidos da imagem
+            
             # draw the outer circle
             # cv2.circle(img, center, radius, color[, thickness[, lineType[, shift]]])
-            opening = cv2.morphologyEx(circles, cv2.MORPH_OPEN, kernel)
             cv2.circle(bordas_color,(i[0],i[1]),i[2],(0,255,0),2)
             x_circle.append(i[0])
             y_circle.append(i[1])
@@ -77,8 +79,11 @@ while(True):
             cv2.circle(bordas_color,(i[0],i[1]),2,(0,0,255),3)
             
             if (len(raios)==3): #só começa quando houverem 3 circulos na tela
+                
                 dif_raio = max(raios)-min(raios)
+                
                 if dif_raio <= 1: #consideramos uma tolerância de até 1 cm no tamanho entre os raios dos círculos                
+                    
                     #printa a distancia entre a folha e a camera do computador
                     dist = (649*3.2/i[2])
                     print("Distância da tela:", ("%.2f" % dist), "cm")
